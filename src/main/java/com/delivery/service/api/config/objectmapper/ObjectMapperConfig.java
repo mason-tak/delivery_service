@@ -1,4 +1,4 @@
-package com.delivery.service.api.config;
+package com.delivery.service.api.config.objectmapper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
