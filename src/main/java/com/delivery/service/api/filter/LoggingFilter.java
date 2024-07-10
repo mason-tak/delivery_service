@@ -10,6 +10,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,18 @@ public class LoggingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         ContentCachingRequestWrapper req = new ContentCachingRequestWrapper((HttpServletRequest) request);
         ContentCachingResponseWrapper res = new ContentCachingResponseWrapper((HttpServletResponse) response);
+
+        List<String> EXCLUDE_URL = List.of(
+                "/v3/api-docs",
+                "/v3/api-docs/swagger-config",
+                "/swagger-ui/favicon-32x32.png",
+                "/swagger-ui/swagger-initializer.js",
+                "/swagger-ui/swagger-ui-bundle.js",
+                "/swagger-ui/swagger-ui-standalone-preset.js",
+                "/swagger-ui/index.css",
+                "/swagger-ui/swagger-ui.css",
+                "/swagger-ui/index.html"
+        );
 
         long startTime = System.currentTimeMillis();
         chain.doFilter(req, res);
@@ -37,20 +50,24 @@ public class LoggingFilter implements Filter {
             headerValues.append(headerKey).append(" : ").append(headerValue).append(" , ");
         });
 
-        log.info("""
-                        |
-                        | [REQUEST] : {} {} ({})
-                        | >> CLIENT_IP : {}
-                        | >> HEADERS : [{}]
-                        | >> REQUEST_PARAM : {}
-                        | >> REQUEST_BODY : {}
-                        """,
-                method, uri, (end - startTime) / 1000.0,
-                getClientIp(req),
-                headerValues,
-                getRequestParams(req),
-                requestBody
-        );
+        boolean isExcluded = EXCLUDE_URL.stream().anyMatch(uri::startsWith);
+
+        if (!isExcluded) {
+            log.info("""
+                            |
+                            | [REQUEST] : {} {} ({})
+                            | >> CLIENT_IP : {}
+                            | >> HEADERS : [{}]
+                            | >> REQUEST_PARAM : {}
+                            | >> REQUEST_BODY : {}
+                            """,
+                    method, uri, (end - startTime) / 1000.0,
+                    getClientIp(req),
+                    headerValues,
+                    getRequestParams(req),
+                    requestBody
+            );
+        }
 
         StringBuilder responseValues = new StringBuilder();
 
@@ -59,20 +76,22 @@ public class LoggingFilter implements Filter {
             responseValues.append(headerKey).append(" : ").append(headerValue).append(" , ");
         });
 
-        log.info("""
-                        |
-                        | [RESPONSE] : {} {} [{}] ({})
-                        | >> CLIENT_IP : {}
-                        | >> HEADERS : [{}]
-                        | >> REQUEST_PARAM : {}
-                        | >> REQUEST_BODY : {}
-                        """,
-                method, uri, res.getStatus(), (end - startTime) / 1000.0,
-                getClientIp(req),
-                headerValues,
-                getRequestParams(req),
-                requestBody
-        );
+        if (!isExcluded) {
+            log.info("""
+                            |
+                            | [RESPONSE] : {} {} [{}] ({})
+                            | >> CLIENT_IP : {}
+                            | >> HEADERS : [{}]
+                            | >> REQUEST_PARAM : {}
+                            | >> REQUEST_BODY : {}
+                            """,
+                    method, uri, res.getStatus(), (end - startTime) / 1000.0,
+                    getClientIp(req),
+                    headerValues,
+                    getRequestParams(req),
+                    requestBody
+            );
+        }
 
         res.copyBodyToResponse();
     }
