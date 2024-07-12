@@ -2,6 +2,7 @@ package com.delivery.service.api.domain.user.service;
 
 import com.delivery.service.api.common.exception.ApiException;
 import com.delivery.service.api.common.response.ApiResponseCode;
+import com.delivery.service.api.common.response.UserResponseCode;
 import com.delivery.service.db.user.UserEntity;
 import com.delivery.service.db.user.UserRepository;
 import com.delivery.service.db.user.enums.UserStatus;
@@ -26,5 +27,14 @@ public class UserService {
                 })
                 .orElseThrow(() -> new ApiException(ApiResponseCode.NULL_POINT, "User Service register Null Point"));
 
+    }
+
+    public UserEntity login(String email, String password) {
+        return getUser(email, password);
+    }
+
+    public UserEntity getUser(String email, String password) {
+        return userRepository.findFirstByEmailAndPasswordAndStatusOrderByIdDesc(email, password, UserStatus.REGISTERED)
+                .orElseThrow(() -> new ApiException(UserResponseCode.USER_NOT_FOUND));
     }
 }
