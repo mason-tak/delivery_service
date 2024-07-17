@@ -2,13 +2,14 @@ package com.delivery.service.api.domain.token.helper;
 
 import com.delivery.service.api.common.exception.ApiException;
 import com.delivery.service.api.common.response.TokenResponseCode;
-import com.delivery.service.api.domain.token.ifs.TokenHelpers;
+import com.delivery.service.api.domain.token.ifs.TokenHelpersIfs;
 import com.delivery.service.api.domain.token.model.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.sql.Date;
@@ -17,15 +18,16 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 @Slf4j
-public class JwtTokenHelper implements TokenHelpers {
+public class JwtTokenHelper implements TokenHelpersIfs {
     @Value("${token.secret.key}")
     private String secretKey;
 
-    @Value("${token.access-key.plus-hour}")
+    @Value("${token.access-token.plus-hour}")
     private Long accessTokenPlusHour;
 
-    @Value("${token.refresh-key.plus-hour}")
+    @Value("${token.refresh-token.plus-hour}")
     private Long refreshTokenPlusHour;
 
     @Override
