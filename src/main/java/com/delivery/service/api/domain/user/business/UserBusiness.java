@@ -1,6 +1,8 @@
 package com.delivery.service.api.domain.user.business;
 
 import com.delivery.service.api.common.annotation.Business;
+import com.delivery.service.api.domain.token.business.TokenBusiness;
+import com.delivery.service.api.domain.token.controller.model.TokenResponse;
 import com.delivery.service.api.domain.user.controller.model.UserLoginRequest;
 import com.delivery.service.api.domain.user.controller.model.UserRegisterRequest;
 import com.delivery.service.api.domain.user.controller.model.UserResponse;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class UserBusiness {
     private final UserService userService;
     private final UserConverter userConverter;
+    private final TokenBusiness tokenBusiness;
 
 
     // 사용자에 대한 가입 처리 로직
@@ -32,10 +35,9 @@ public class UserBusiness {
 //                );
     }
 
-    public UserResponse login(UserLoginRequest request) {
+    public TokenResponse login(UserLoginRequest request) {
         UserEntity entity = userService.login(request.getEmail(), request.getPassword());
 
-        // Todo: 아직 토큰 작업 안함
-        return userConverter.toResponse(entity);
+        return tokenBusiness.issueToken(entity);
     }
 }
