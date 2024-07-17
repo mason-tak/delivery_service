@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum TokenResponseCode implements ResponseCodeIfs {
     INVALID_TOKEN(HttpStatus.BAD_REQUEST.value(), 2001, "유효하지 않은 토큰"),
     EXPIRED_TOKEN(HttpStatus.BAD_REQUEST.value(), 2002, "만료된 토큰"),
-    TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST.value(), 2003, "알수없는 토큰 에러");
+    TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST.value(), 2003, "알수없는 토큰 에러"),
+    AUTHORIZATION_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), 2004, "인증 헤더 토큰 없음");
 
     private final Integer httpStatusCode;
     private final Integer ApplicationStatusCode;

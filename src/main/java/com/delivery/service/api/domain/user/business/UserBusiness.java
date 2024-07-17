@@ -7,6 +7,7 @@ import com.delivery.service.api.domain.user.controller.model.UserLoginRequest;
 import com.delivery.service.api.domain.user.controller.model.UserRegisterRequest;
 import com.delivery.service.api.domain.user.controller.model.UserResponse;
 import com.delivery.service.api.domain.user.converter.UserConverter;
+import com.delivery.service.api.domain.user.model.User;
 import com.delivery.service.api.domain.user.service.UserService;
 import com.delivery.service.db.user.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,10 @@ public class UserBusiness {
         UserEntity entity = userService.login(request.getEmail(), request.getPassword());
 
         return tokenBusiness.issueToken(entity);
+    }
+
+    public UserResponse me(User user) {
+        UserEntity userEntity = userService.getUserWithThrow(user.getId());
+        return userConverter.toResponse(userEntity);
     }
 }
