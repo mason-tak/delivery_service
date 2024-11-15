@@ -17,6 +17,11 @@ import java.util.Optional;
 public class UserOrderService {
     private final UserOrderRepository userOrderRepository;
 
+    public UserOrderEntity getUserOrderWithOutStatusWithThrow(Long id, Long userId) {
+        return userOrderRepository.findAllByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ApiException(ApiResponseCode.NULL_POINT));
+    }
+
     public UserOrderEntity getUserOrderWithThrow(Long id, Long userId) {
         return userOrderRepository.findAllByIdAndStatusAndUserId(id, UserOrderStatus.REGISTERED, userId)
                 .orElseThrow(() -> new ApiException(ApiResponseCode.NULL_POINT));
@@ -47,9 +52,7 @@ public class UserOrderService {
     public List<UserOrderEntity> history(Long userId) {
         return getUserOrderList(
                 userId,
-                List.of(
-                        UserOrderStatus.RECEIVE
-                )
+                List.of(UserOrderStatus.RECEIVE)
         );
     }
 
